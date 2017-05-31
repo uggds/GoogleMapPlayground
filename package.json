@@ -15,7 +15,11 @@
     "babel-jest": "20.0.3",
     "babel-preset-react-native": "1.9.2",
     "jest": "20.0.4",
-    "react-test-renderer": "16.0.0-alpha.6"
+    "react-native-deprecated-custom-components": "^0.1.0",
+    "react-native-router-redux": "file:../react-native-router-redux",
+    "react-redux": "^5.0.5",
+    "react-test-renderer": "16.0.0-alpha.6",
+    "redux": "^3.6.0"
   },
   "jest": {
     "preset": "react-native"
