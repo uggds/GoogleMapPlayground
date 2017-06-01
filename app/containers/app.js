@@ -13,7 +13,7 @@ import {
   TabBar,
   TabRoute
 } from 'react-native-router-redux';
-import Detail from '../components/Detail';
+import Detail from '../containers/Detail';
 import Master from '../components/Master';
 import SignIn from '../components/SignIn';
 

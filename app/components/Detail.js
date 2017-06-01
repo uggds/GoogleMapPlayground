@@ -40,8 +40,8 @@ export default class GoogleMapPlayground extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      LATITUDE,
-      LONGITUDE,
+      LATITUDE: this.props.shop._objs[0].latitude,
+      LONGITUDE: this.props.shop._objs[0].longitude,
       marker1: true,
       marker2: false,
     }

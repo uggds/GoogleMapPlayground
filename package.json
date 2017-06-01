@@ -19,7 +19,9 @@
     "react-native-router-redux": "file:../react-native-router-redux",
     "react-redux": "^5.0.5",
     "react-test-renderer": "16.0.0-alpha.6",
-    "redux": "^3.6.0"
+    "redux": "^3.6.0",
+    "redux-actions": "^2.0.3",
+    "redux-saga": "^0.15.3"
   },
   "jest": {
     "preset": "react-native"
