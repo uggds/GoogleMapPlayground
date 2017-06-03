@@ -1,10 +1,3 @@
-
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- * @flow
- */
-
 import React from 'react';
 import {
   AppRegistry,
@@ -26,97 +19,63 @@ const LATITUDE_DELTA = 0.0922;
 const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
 const SPACE = 0.01;
 
-//async function getShop() {
-//  try {
-//    let res = await fetch('https://api-datastore.appiaries.com/v1/dat/_sandbox/pecolog/shop/-')
-//    let responseJson = await res.json()
-//    return responseJson
-//  } catch(error) {
-//    console.error(error);
-//  }
-//}
+const getRandomInt = (min, max) => {
+  min = Math.ceil(min)
+  max = Math.floor(max)
+  return Math.floor(Math.random() * (max - min)) * min
+}
+
 
 export default class GoogleMapPlayground extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      markers: [],
       LATITUDE: this.props.shop._objs[0].latitude,
       LONGITUDE: this.props.shop._objs[0].longitude,
       marker1: true,
       marker2: false,
     }
-    //fetch('https://api-datastore.appiaries.com/v1/dat/_sandbox/pecolog/shop/-')
-    //.then((response) => response.json())
-    //.then((res) => {
-    //  console.log(res)
-    //  this.state = {
-    //    LATITUDE: res._objs[0].latitude,
-    //    LONGITUDE: res._objs[0].longitude,
-    //    marker1: true,
-    //    marker2: false,
-    //  }
-    //})
+    this.handlePress = this.handlePress.bind(this)
   }
-  //componentDidMount() {
-  //  fetch('https://api-datastore.appiaries.com/v1/dat/_sandbox/pecolog/shop/-')
-  //  .then((response) => response.json())
-  //  .then((res) => {
-  //    console.log(res)
-  //    this.setState({
-  //      LATITUDE: res._objs[0].latitude,
-  //      LONGITUDE: res._objs[0].longitude,
-  //    })
-  //  })
-  //}
+
+  handlePress(e) {
+    const rand = `$${getRandomInt(50, 300)}`
+    this.setState({
+      markers: [
+        ...this.state.markers,
+        {
+          key: rand,
+          coordinate: e.nativeEvent.coordinate,
+          cost: rand
+        }
+      ]
+    })
+  }
 
   render() {
     return (
-      <View style={styles.container}>
-        <MapView
+      <MapView
+          style={styles.container}
           provider={this.props.provider}
-          style={styles.map}
           initialRegion={{
             latitude: this.state.LATITUDE,
             longitude: this.state.LONGITUDE,
             latitudeDelta: LATITUDE_DELTA,
             longitudeDelta: LONGITUDE_DELTA,
           }}
+          onPress={this.handlePress}
         >
-          <MapView.Marker
-            onPress={() => this.setState({ marker1: !this.state.marker1 })}
-            coordinate={{
-              latitude: LATITUDE + SPACE,
-              longitude: LONGITUDE + SPACE,
-            }}
-            centerOffset={{ x: -18, y: -60 }}
-            anchor={{ x: 0.69, y: 1 }}
-            image={this.state.marker1 ? flagBlueImg : flagPinkImg}
-          >
-            <Text style={styles.marker}>X</Text>
-          </MapView.Marker>
-          <MapView.Marker
-            onPress={() => this.setState({ marker2: !this.state.marker2 })}
-            coordinate={{
-              latitude: LATITUDE - SPACE,
-              longitude: LONGITUDE - SPACE,
-            }}
-            centerOffset={{ x: -42, y: -60 }}
-            anchor={{ x: 0.84, y: 1 }}
-            image={this.state.marker2 ? flagBlueImg : flagPinkImg}
-          />
-          <MapView.Marker
-            onPress={() => this.setState({ marker2: !this.state.marker2 })}
-            coordinate={{
-              latitude: LATITUDE + SPACE,
-              longitude: LONGITUDE - SPACE,
-            }}
-            centerOffset={{ x: -42, y: -60 }}
-            anchor={{ x: 0.84, y: 1 }}
-            opacity={0.6}
-            image={this.state.marker2 ? flagBlueImg : flagPinkImg}
-          />
-        </MapView>
-      </View>
+        {this.state.markers.map(marker => {
+          return (
+            <MapView.Marker {...marker}>
+              <View style={styles.marker}>
+              <Text style={styles.text}>{marker.cost}</Text>
+              </View>
+            </MapView.Marker>
+          )
+        })}
+      </MapView>
     );
   }
 }
@@ -127,17 +86,65 @@ GoogleMapPlayground.propTypes = {
 
 const styles = StyleSheet.create({
   container: {
-    ...StyleSheet.absoluteFillObject,
-    justifyContent: 'flex-end',
-    alignItems: 'center',
+    flex: 1,
   },
-  map: {
-    ...StyleSheet.absoluteFillObject,
-  },
-  marker: {
-    marginLeft: 46,
-    marginTop: 33,
-    fontWeight: 'bold',
-  },
+    marker: {
+      backgroundColor: "#550bbc",
+      padding: 5,
+      borderRadius: 5,
+    },
+      text: {
+        color: "#fff",
+        fontWeight: "bold"
+      }
 });
 
+//const styles = StyleSheet.create({
+//  container: {
+//    ...StyleSheet.absoluteFillObject,
+//    justifyContent: 'flex-end',
+//    alignItems: 'center',
+//  },
+//  map: {
+//    ...StyleSheet.absoluteFillObject,
+//  },
+//  marker: {
+//    marginLeft: 46,
+//    marginTop: 33,
+//    fontWeight: 'bold',
+//  },
+//});
+
+ //         <MapView.Marker
+ //           onPress={() => this.setState({ marker1: !this.state.marker1 })}
+ //           coordinate={{
+ //             latitude: this.state.LATITUDE + SPACE,
+ //             longitude: this.state.LONGITUDE + SPACE,
+ //           }}
+ //           centerOffset={{ x: -18, y: -60 }}
+ //           anchor={{ x: 0.69, y: 1 }}
+ //           image={this.state.marker1 ? flagBlueImg : flagPinkImg}
+ //         >
+ //           <Text style={styles.marker}>X</Text>
+ //         </MapView.Marker>
+ //         <MapView.Marker
+ //           onPress={() => this.setState({ marker2: !this.state.marker2 })}
+ //           coordinate={{
+ //             latitude: this.state.LATITUDE - SPACE,
+ //             longitude: this.state.LONGITUDE - SPACE,
+ //           }}
+ //           centerOffset={{ x: -42, y: -60 }}
+ //           anchor={{ x: 0.84, y: 1 }}
+ //           image={this.state.marker2 ? flagBlueImg : flagPinkImg}
+ //         />
+ //         <MapView.Marker
+ //           onPress={() => this.setState({ marker2: !this.state.marker2 })}
+ //           coordinate={{
+ //             latitude: this.state.LATITUDE + SPACE,
+ //             longitude: this.state.LONGITUDE - SPACE,
+ //           }}
+ //           centerOffset={{ x: -42, y: -60 }}
+ //           anchor={{ x: 0.84, y: 1 }}
+ //           opacity={0.6}
+ //           image={this.state.marker2 ? flagBlueImg : flagPinkImg}
+ //         />
