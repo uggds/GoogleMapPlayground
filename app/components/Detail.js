@@ -15,9 +15,9 @@ const { width, height } = Dimensions.get('window');
 const ASPECT_RATIO = width / height;
 const LATITUDE = 37.78825;
 const LONGITUDE = -122.4324;
-const LATITUDE_DELTA = 0.0922;
+const LATITUDE_DELTA = 0.00922;
 const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
-const SPACE = 0.01;
+const SPACE = 0.001;
 
 const getRandomInt = (min, max) => {
   min = Math.ceil(min)
@@ -30,27 +30,42 @@ export default class GoogleMapPlayground extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      markers: [],
+      provider: 'google',
+      markers: [
+        {
+          key: 1,
+          coordinate: {
+            latitude: this.props.shop._objs[0].latitude,
+            longitude: this.props.shop._objs[0].longitude,
+          },
+          cost: 1
+        }
+      ],
       LATITUDE: this.props.shop._objs[0].latitude,
       LONGITUDE: this.props.shop._objs[0].longitude,
       marker1: true,
       marker2: false,
     }
     this.handlePress = this.handlePress.bind(this)
+    this.handleMarkPress = this.handleMarkPress.bind(this)
   }
 
   handlePress(e) {
-    const rand = `$${getRandomInt(50, 300)}`
+    const rand = getRandomInt(50, 300)
     this.setState({
       markers: [
         ...this.state.markers,
         {
           key: rand,
           coordinate: e.nativeEvent.coordinate,
-          cost: rand
+          cost: `$${rand}`,
+          onMarkerPress: this.handleMarkPress
         }
       ]
     })
+  }
+  
+  handleMarkPress(e) {
   }
 
   render() {
@@ -70,7 +85,7 @@ export default class GoogleMapPlayground extends React.Component {
           return (
             <MapView.Marker {...marker}>
               <View style={styles.marker}>
-              <Text style={styles.text}>{marker.cost}</Text>
+                <Text style={styles.text}>{marker.cost}</Text>
               </View>
             </MapView.Marker>
           )
