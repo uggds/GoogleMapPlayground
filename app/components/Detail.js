@@ -7,8 +7,8 @@ import {
   Dimensions,
 } from 'react-native';
 import MapView from 'react-native-maps';
-import flagBlueImg from '../../assets/flag-blue.png';
-import flagPinkImg from '../../assets/flag-pink.png';
+import flagBlueImg from '../../assets/marker.png';
+import flagPinkImg from '../../assets/marker.png';
 
 const { width, height } = Dimensions.get('window');
 
@@ -25,40 +25,50 @@ const getRandomInt = (min, max) => {
   return Math.floor(Math.random() * (max - min)) * min
 }
 
+let key = 0
 
 export default class GoogleMapPlayground extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      provider: 'google',
       markers: [
         {
-          key: 1,
+          key,
           coordinate: {
             latitude: this.props.shop._objs[0].latitude,
             longitude: this.props.shop._objs[0].longitude,
           },
-          cost: 1
+          title: this.props.shop._objs[0].name,
+          description: 'hogehogehoge~',
+          image: flagBlueImg
         }
-      ],
+        ],
+        region: {
+            latitude: this.props.shop._objs[0].latitude,
+            longitude: this.props.shop._objs[0].longitude,
+            latitudeDelta: LATITUDE_DELTA,
+            longitudeDelta: LONGITUDE_DELTA,
+        },
       LATITUDE: this.props.shop._objs[0].latitude,
       LONGITUDE: this.props.shop._objs[0].longitude,
       marker1: true,
       marker2: false,
     }
     this.handlePress = this.handlePress.bind(this)
-    this.handleMarkPress = this.handleMarkPress.bind(this)
+    this.onRegionChange = this.onRegionChange.bind(this)
+    //this.handleMarkPress = this.handleMarkPress.bind(this)
   }
 
   handlePress(e) {
-    const rand = getRandomInt(50, 300)
     this.setState({
       markers: [
         ...this.state.markers,
         {
-          key: rand,
+          key: ++key,
           coordinate: e.nativeEvent.coordinate,
-          cost: `$${rand}`,
+          title: `Hoge ${key}`,
+          description: 'hogehogehoge~',
+          image: flagPinkImg,
           onMarkerPress: this.handleMarkPress
         }
       ]
@@ -68,29 +78,39 @@ export default class GoogleMapPlayground extends React.Component {
   handleMarkPress(e) {
   }
 
+  onRegionChange(region) {
+    this.setState({region})
+  }
+
   render() {
     return (
+      <View style={styles.container} >
       <MapView
-          style={styles.container}
-          provider={this.props.provider}
-          initialRegion={{
-            latitude: this.state.LATITUDE,
-            longitude: this.state.LONGITUDE,
-            latitudeDelta: LATITUDE_DELTA,
-            longitudeDelta: LONGITUDE_DELTA,
-          }}
+          style={styles.map}
+          mapType="standard"
+          showsUserLocation={true}
+          followsUserLocation={true}
+          showsCompass={false}
+          showsPointOfInterest={false}
+          initialRegion={this.state.region}
           onPress={this.handlePress}
+          onRegionChange={this.onRegionChange}
         >
         {this.state.markers.map(marker => {
           return (
-            <MapView.Marker {...marker}>
-              <View style={styles.marker}>
-                <Text style={styles.text}>{marker.cost}</Text>
-              </View>
-            </MapView.Marker>
+            <MapView.Marker {...marker} />
           )
         })}
-      </MapView>
+        </MapView>
+        <View style={styles.container}>
+        <Text>
+        Latitude: {this.state.region.latitude}{'\n'}
+        Longitude: {this.state.region.longitude}{'\n'}
+        LatitudeDelta: {this.state.region.latitudeDelta}{'\n'}
+        LongitudeDelta: {this.state.region.longitudeDelta}
+        </Text>
+        </View>
+      </View>
     );
   }
 }
@@ -101,17 +121,22 @@ GoogleMapPlayground.propTypes = {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flex: 1
   },
-    marker: {
-      backgroundColor: "#550bbc",
-      padding: 5,
-      borderRadius: 5,
-    },
-      text: {
-        color: "#fff",
-        fontWeight: "bold"
-      }
+  map: {
+    width: width,
+    height: height,
+    flex: 2
+  },
+  marker: {
+    backgroundColor: "#550bbc",
+    padding: 5,
+    borderRadius: 5,
+  },
+  text: {
+    color: "#fff",
+    fontWeight: "bold"
+  }
 });
 
 //const styles = StyleSheet.create({
