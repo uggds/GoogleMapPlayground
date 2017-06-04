@@ -9,6 +9,7 @@ import {
 import MapView from 'react-native-maps';
 import flagBlueImg from '../../assets/marker.png';
 import flagPinkImg from '../../assets/marker.png';
+import LocationButton from './LocationButton'
 
 const { width, height } = Dimensions.get('window');
 
@@ -42,13 +43,13 @@ export default class GoogleMapPlayground extends React.Component {
           description: 'hogehogehoge~',
           image: flagBlueImg
         }
-        ],
-        region: {
-            latitude: this.props.shop._objs[0].latitude,
-            longitude: this.props.shop._objs[0].longitude,
-            latitudeDelta: LATITUDE_DELTA,
-            longitudeDelta: LONGITUDE_DELTA,
-        },
+      ],
+      region: {
+          latitude: this.props.shop._objs[0].latitude,
+          longitude: this.props.shop._objs[0].longitude,
+          latitudeDelta: LATITUDE_DELTA,
+          longitudeDelta: LONGITUDE_DELTA,
+      },
       LATITUDE: this.props.shop._objs[0].latitude,
       LONGITUDE: this.props.shop._objs[0].longitude,
       marker1: true,
@@ -56,7 +57,16 @@ export default class GoogleMapPlayground extends React.Component {
     }
     this.handlePress = this.handlePress.bind(this)
     this.onRegionChange = this.onRegionChange.bind(this)
+    this.moveMaptoLocation = this.moveMaptoLocation.bind(this)
     //this.handleMarkPress = this.handleMarkPress.bind(this)
+  }
+
+  moveMaptoLocation(latlng) {
+    this.refs.map.animateToRegion({
+        latitudeDelta: 0.002,
+        longitudeDelta: 0.002,
+        ...latlng,
+    }, 1000)
   }
 
   handlePress(e) {
@@ -86,13 +96,14 @@ export default class GoogleMapPlayground extends React.Component {
     return (
       <View style={styles.container} >
       <MapView
+          ref="map"
           style={styles.map}
           mapType="standard"
           showsUserLocation={true}
           followsUserLocation={true}
           showsCompass={false}
           showsPointOfInterest={false}
-          initialRegion={this.state.region}
+          region={this.state.region}
           onPress={this.handlePress}
           onRegionChange={this.onRegionChange}
         >
@@ -103,12 +114,22 @@ export default class GoogleMapPlayground extends React.Component {
         })}
         </MapView>
         <View style={styles.container}>
-        <Text>
-        Latitude: {this.state.region.latitude}{'\n'}
-        Longitude: {this.state.region.longitude}{'\n'}
-        LatitudeDelta: {this.state.region.latitudeDelta}{'\n'}
-        LongitudeDelta: {this.state.region.longitudeDelta}
-        </Text>
+          <Text>
+          Latitude: {this.state.region.latitude}{'\n'}
+          Longitude: {this.state.region.longitude}{'\n'}
+          LatitudeDelta: {this.state.region.latitudeDelta}{'\n'}
+          LongitudeDelta: {this.state.region.longitudeDelta}
+          </Text>
+        </View>
+        <View style={styles.container}>
+        {this.state.markers.map((marker, i) => {
+          return (
+            <LocationButton key={i}
+              moveMaptoLocation={this.moveMaptoLocation}
+              marker={marker}
+            />
+          )
+        })}
         </View>
       </View>
     );
@@ -126,7 +147,7 @@ const styles = StyleSheet.create({
   map: {
     width: width,
     height: height,
-    flex: 2
+    flex: 1
   },
   marker: {
     backgroundColor: "#550bbc",
