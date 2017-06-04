@@ -13,9 +13,9 @@ import {
   TabBar,
   TabRoute
 } from 'react-native-router-redux';
-import Detail from '../containers/Detail';
-import Master from '../components/Master';
-import SignIn from '../components/SignIn';
+import Detail from './components/DetailContainer';
+import Master from './components/Master';
+import SignIn from './components/SignIn';
 
 const mapStateToProps = state => ({
   router: state.router,
@@ -42,11 +42,11 @@ const defaultSchema = {
 };
 
 const assets = {
-  'calendar': require('../../assets/thin-0021_calendar_month_day_planner.png'),
-  'home': require('../../assets/thin-0046_home_house.png'),
-  'logo': require('../../assets/qwikly.png'),
-  'profile': require('../../assets/thin-0091_file_profile_user_personal.png'),
-  'video': require('../../assets/thin-0592_tv_televison_movie_news.png'),
+  'calendar': require('../assets/thin-0021_calendar_month_day_planner.png'),
+  'home': require('../assets/thin-0046_home_house.png'),
+  'logo': require('../assets/qwikly.png'),
+  'profile': require('../assets/thin-0091_file_profile_user_personal.png'),
+  'video': require('../assets/thin-0592_tv_televison_movie_news.png'),
 };
 
 class Application extends Component {

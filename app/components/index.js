@@ -2,10 +2,10 @@ import React, { Component }  from 'react';
 import { createStore, applyMiddleware, combineReducers } from 'redux';
 import createSagaMiddleware from 'redux-saga'
 import { Provider } from 'react-redux';
-import rootSaga from './sagas'
+import rootSaga from '../sagas'
 
 import * as reducers from '../reducers';
-import Application from './app';
+import Application from '../app';
 
 const sagaMiddleware = createSagaMiddleware()
 const reducer = combineReducers(reducers)

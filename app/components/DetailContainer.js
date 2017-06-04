@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import { connect } from 'react-redux';
-import Detail from '../components/Detail'
+import Detail from './Detail'
 
 const mapStateToProps = state => ({
   shop: state.shopReducer.shop,
