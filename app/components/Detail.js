@@ -1,6 +1,7 @@
 import React from 'react';
 import {
   AppRegistry,
+  Animated,
   StyleSheet,
   View,
   Text,
@@ -10,6 +11,7 @@ import MapView from 'react-native-maps';
 import flagBlueImg from '../../assets/marker.png';
 import flagPinkImg from '../../assets/marker.png';
 import LocationButton from './LocationButton'
+import CircleButton from './CircleButton'
 
 const { width, height } = Dimensions.get('window');
 
@@ -95,7 +97,7 @@ export default class GoogleMapPlayground extends React.Component {
   render() {
     return (
       <View style={styles.container} >
-      <MapView
+        <MapView
           ref="map"
           style={styles.map}
           mapType="standard"
@@ -104,7 +106,6 @@ export default class GoogleMapPlayground extends React.Component {
           showsCompass={false}
           showsPointOfInterest={false}
           region={this.state.region}
-          onPress={this.handlePress}
           onRegionChange={this.onRegionChange}
         >
         {this.state.markers.map(marker => {
@@ -113,24 +114,7 @@ export default class GoogleMapPlayground extends React.Component {
           )
         })}
         </MapView>
-        <View style={styles.container}>
-          <Text>
-          Latitude: {this.state.region.latitude}{'\n'}
-          Longitude: {this.state.region.longitude}{'\n'}
-          LatitudeDelta: {this.state.region.latitudeDelta}{'\n'}
-          LongitudeDelta: {this.state.region.longitudeDelta}
-          </Text>
-        </View>
-        <View style={styles.container}>
-        {this.state.markers.map((marker, i) => {
-          return (
-            <LocationButton key={i}
-              moveMaptoLocation={this.moveMaptoLocation}
-              marker={marker}
-            />
-          )
-        })}
-        </View>
+        <CircleButton />
       </View>
     );
   }
@@ -147,7 +131,8 @@ const styles = StyleSheet.create({
   map: {
     width: width,
     height: height,
-    flex: 1
+    flex: 1,
+    position: 'relative'
   },
   marker: {
     backgroundColor: "#550bbc",
@@ -209,3 +194,25 @@ const styles = StyleSheet.create({
  //           opacity={0.6}
  //           image={this.state.marker2 ? flagBlueImg : flagPinkImg}
  //         />
+
+
+
+
+//<View style={styles.container}>
+//  <Text>
+//    Latitude: {this.state.region.latitude}{'\n'}
+//    Longitude: {this.state.region.longitude}{'\n'}
+//    LatitudeDelta: {this.state.region.latitudeDelta}{'\n'}
+//    LongitudeDelta: {this.state.region.longitudeDelta}
+//  </Text>
+//</View>
+//<View style={styles.container}>
+//{this.state.markers.map((marker, i) => {
+//  return (
+//    <LocationButton key={i}
+//                    moveMaptoLocation={this.moveMaptoLocation}
+//                    marker={marker}
+//    />
+//  )
+//})}
+//</View>

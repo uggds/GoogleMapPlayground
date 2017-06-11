@@ -56,7 +56,7 @@ class Application extends Component {
         <Schema name="default" {...defaultSchema} />
 
         <Route name="signIn" component={SignIn} type="reset" hideNavBar={true} />
-        <Route name="detail" component={Detail} />
+        <Route name="detail" component={Detail} type="reset" hideNavBar={true} />
         <TabRoute name="tabBar" barTint='#FFFFFF' tint="#32DEAF">
           <Route name="tab1" component={Master('#111')} title="Home" tabItem={{icon: assets['home'], title: 'Home'}} />
           <Route name="tab2" component={Master('#222')} title="Calendar" tabItem={{icon: assets['calendar'], title: 'Calendar'}} />

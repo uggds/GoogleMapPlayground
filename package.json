@@ -9,6 +9,7 @@
   "dependencies": {
     "react": "16.0.0-alpha.6",
     "react-native": "0.44.2",
+    "react-native-action-button": "^2.6.10",
     "react-native-maps": ">=0.15.2"
   },
   "devDependencies": {
@@ -17,6 +18,7 @@
     "jest": "20.0.4",
     "react-native-deprecated-custom-components": "^0.1.0",
     "react-native-router-redux": "file:../react-native-router-redux",
+    "react-native-vector-icons": "^4.2.0",
     "react-redux": "^5.0.5",
     "react-test-renderer": "16.0.0-alpha.6",
     "redux": "^3.6.0",
