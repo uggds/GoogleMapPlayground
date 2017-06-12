@@ -6,6 +6,7 @@ import {
   View,
   Text,
   Dimensions,
+  TouchableOpacity
 } from 'react-native';
 import MapView from 'react-native-maps';
 import flagBlueImg from '../../assets/marker.png';
@@ -28,12 +29,26 @@ const getRandomInt = (min, max) => {
   return Math.floor(Math.random() * (max - min)) * min
 }
 
+const getTransform = animation => {
+  return {
+    transform: [
+      { translateY: animation}
+    ]
+  }
+}
+
 let key = 0
 
 export default class GoogleMapPlayground extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      animate: new Animated.Value(0),
+      fabs: [
+        new Animated.Value(0),
+        new Animated.Value(0),
+        new Animated.Value(0),
+      ],
       markers: [
         {
           key,
@@ -57,10 +72,31 @@ export default class GoogleMapPlayground extends React.Component {
       marker1: true,
       marker2: false,
     }
+    this.open = false
+    this.handlePressBtn = this.handlePressBtn.bind(this)
     this.handlePress = this.handlePress.bind(this)
     this.onRegionChange = this.onRegionChange.bind(this)
     this.moveMaptoLocation = this.moveMaptoLocation.bind(this)
     //this.handleMarkPress = this.handleMarkPress.bind(this)
+  }
+
+  handlePressBtn(e) {
+    const toValue = this.open ? 0 : 1
+    const flyouts = this.state.fabs.map((value, i) => {
+      return Animated.spring(value, {
+        toValue: (i + 1) * -90 * toValue,
+        friction: 5
+      })
+    })
+
+    Animated.parallel([
+      Animated.timing(this.state.animate, {
+        toValue,
+        duration: 300
+      }),
+      Animated.stagger(30, flyouts)
+    ]).start()
+    this.open = !this.open
   }
 
   moveMaptoLocation(latlng) {
@@ -95,8 +131,30 @@ export default class GoogleMapPlayground extends React.Component {
   }
 
   render() {
+    const backgroundInterpolate= this.state.animate.interpolate({
+      inputRange: [0, 1],
+      outputRange: ['rgb(90,34,153)', 'rgb(35,11,61)']
+    })
+    const backgroundStyle = {
+      backgroundColor: backgroundInterpolate
+    }
+    const buttonColorInterpolate = this.state.animate.interpolate({
+      inputRange: [0, 1],
+      outputRange: ['rgb(24,214,255)', 'rgb(255,255,255)']
+    })
+    const buttonRotate = this.state.animate.interpolate({
+      inputRange: [0, 1],
+      outputRange: ['0deg', '135deg']
+
+    })
+    const buttonStyle = {
+      backgroundColor: buttonColorInterpolate,
+      transform: [
+        { rotate: buttonRotate }
+      ]
+    }
+
     return (
-      <View style={styles.container} >
         <MapView
           ref="map"
           style={styles.map}
@@ -113,9 +171,25 @@ export default class GoogleMapPlayground extends React.Component {
             <MapView.Marker {...marker} />
           )
         })}
+        <View style={styles.position}>
+          {
+            this.state.fabs.map((animation, i) => {
+              return (
+                <TouchableOpacity
+                  key={i}
+                  style={[styles.button, styles.fab, styles.flyout, getTransform(animation)]}
+                  onPress={this.handlePressBtn}
+                />
+              )
+            })
+          }
+          <TouchableOpacity onPress={this.handlePressBtn}>
+            <Animated.View style={[styles.button, buttonStyle]}>
+              <Text style={styles.plus}>+</Text>
+            </Animated.View>
+          </TouchableOpacity>
+        </View>
         </MapView>
-        <CircleButton />
-      </View>
     );
   }
 }
@@ -142,7 +216,33 @@ const styles = StyleSheet.create({
   text: {
     color: "#fff",
     fontWeight: "bold"
+  },
+  position: {
+    position: 'absolute',
+    right: 45,
+    bottom: 45
+  },
+  fab: {
+    position: 'absolute',
+    right: 0,
+    bottom: 0
+  },
+  button: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  flyout: {
+    backgroundColor: '#9439FF'
+  },
+  plus: {
+    fontWeight: 'bold',
+    fontSize: 30,
+    color: '#00768F'
   }
+
 });
 
 //const styles = StyleSheet.create({
