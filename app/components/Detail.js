@@ -29,10 +29,11 @@ const getRandomInt = (min, max) => {
   return Math.floor(Math.random() * (max - min)) * min
 }
 
-const getTransform = animation => {
+const getTransform = (animation, animation2) => {
   return {
     transform: [
-      { translateY: animation}
+      { translateY: animation},
+      { rotate: animation2 }
     ]
   }
 }
@@ -47,7 +48,12 @@ export default class GoogleMapPlayground extends React.Component {
       fabs: [
         new Animated.Value(0),
         new Animated.Value(0),
+        new Animated.Value(0)
+      ],
+      spins : [
         new Animated.Value(0),
+        new Animated.Value(0),
+        new Animated.Value(0)
       ],
       markers: [
         {
@@ -82,10 +88,18 @@ export default class GoogleMapPlayground extends React.Component {
 
   handlePressBtn(e) {
     const toValue = this.open ? 0 : 1
+
     const flyouts = this.state.fabs.map((value, i) => {
       return Animated.spring(value, {
-        toValue: (i + 1) * -90 * toValue,
+        toValue:  (i + 1) * -90 * toValue ,
         friction: 5
+      })
+    })
+
+    const spins = this.state.spins.map((value, i) => {
+      return Animated.timing(value, {
+        toValue,
+        duration: 300
       })
     })
 
@@ -94,7 +108,8 @@ export default class GoogleMapPlayground extends React.Component {
         toValue,
         duration: 300
       }),
-      Animated.stagger(30, flyouts)
+      Animated.stagger(30, flyouts),
+      Animated.stagger(40, spins),
     ]).start()
     this.open = !this.open
   }
@@ -131,22 +146,17 @@ export default class GoogleMapPlayground extends React.Component {
   }
 
   render() {
-    const backgroundInterpolate= this.state.animate.interpolate({
-      inputRange: [0, 1],
-      outputRange: ['rgb(90,34,153)', 'rgb(35,11,61)']
-    })
-    const backgroundStyle = {
-      backgroundColor: backgroundInterpolate
-    }
+
     const buttonColorInterpolate = this.state.animate.interpolate({
       inputRange: [0, 1],
       outputRange: ['rgb(24,214,255)', 'rgb(255,255,255)']
     })
+
     const buttonRotate = this.state.animate.interpolate({
       inputRange: [0, 1],
       outputRange: ['0deg', '135deg']
-
     })
+
     const buttonStyle = {
       backgroundColor: buttonColorInterpolate,
       transform: [
@@ -155,31 +165,41 @@ export default class GoogleMapPlayground extends React.Component {
     }
 
     return (
+      <View style={styles.container}>
         <MapView
-          ref="map"
-          style={styles.map}
-          mapType="standard"
-          showsUserLocation={true}
-          followsUserLocation={true}
-          showsCompass={false}
-          showsPointOfInterest={false}
-          region={this.state.region}
-          onRegionChange={this.onRegionChange}
-        >
-        {this.state.markers.map(marker => {
-          return (
-            <MapView.Marker {...marker} />
-          )
-        })}
+            ref="map"
+            style={styles.map}
+            mapType="standard"
+            showsUserLocation={true}
+            followsUserLocation={true}
+            showsCompass={false}
+            showsPointOfInterest={false}
+            region={this.state.region}
+            onRegionChange={this.onRegionChange}
+          >
+          {this.state.markers.map(marker => {
+            return (
+              <MapView.Marker {...marker} />
+            )
+          })}
+        </MapView>
         <View style={styles.position}>
           {
-            this.state.fabs.map((animation, i) => {
+            this.state.spins.map((animation, i) => {
+              let animation2 = animation.interpolate({
+                inputRange: [0, 1],
+                outputRange: ['0deg', '135deg']
+              })
               return (
                 <TouchableOpacity
                   key={i}
-                  style={[styles.button, styles.fab, styles.flyout, getTransform(animation)]}
+                  style={[styles.fab]}
                   onPress={this.handlePressBtn}
-                />
+                >
+                  <Animated.View style={[styles.button, styles.flyout, getTransform(this.state.fabs[i], animation2)]}>
+                    <Text style={[styles.plus]}>+</Text>
+                  </Animated.View>
+                </TouchableOpacity>
               )
             })
           }
@@ -189,7 +209,7 @@ export default class GoogleMapPlayground extends React.Component {
             </Animated.View>
           </TouchableOpacity>
         </View>
-        </MapView>
+      </View>
     );
   }
 }
