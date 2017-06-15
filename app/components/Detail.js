@@ -29,10 +29,18 @@ const getRandomInt = (min, max) => {
   return Math.floor(Math.random() * (max - min)) * min
 }
 
-const getTransform = (animation, animation2) => {
+const icons = [
+  require('../../assets/icon3.png'),
+  require('../../assets/icon4.png'),
+  require('../../assets/icon5.png')
+]
+
+
+const getTransform = (animation, animation2, x) => {
   return {
     transform: [
       { translateY: animation},
+      { translateX: x},
       { rotate: animation2 }
     ]
   }
@@ -51,6 +59,11 @@ export default class GoogleMapPlayground extends React.Component {
         new Animated.Value(0)
       ],
       spins : [
+        new Animated.Value(0),
+        new Animated.Value(0),
+        new Animated.Value(0)
+      ],
+      xx : [
         new Animated.Value(0),
         new Animated.Value(0),
         new Animated.Value(0)
@@ -91,7 +104,7 @@ export default class GoogleMapPlayground extends React.Component {
 
     const flyouts = this.state.fabs.map((value, i) => {
       return Animated.spring(value, {
-        toValue:  (i + 1) * -90 * toValue ,
+        toValue:  (-110 * Math.sin(Math.PI / 4 * i)) * toValue,
         friction: 5
       })
     })
@@ -103,11 +116,19 @@ export default class GoogleMapPlayground extends React.Component {
       })
     })
 
+    const x = this.state.xx.map((value, i) => {
+      return Animated.timing(value, {
+        toValue: (-110 * Math.cos(Math.PI / 4 * i)) * toValue,
+        duration: 300
+      })
+    })
+
     Animated.parallel([
       Animated.timing(this.state.animate, {
         toValue,
         duration: 300
       }),
+      Animated.stagger(30, x),
       Animated.stagger(30, flyouts),
       Animated.stagger(40, spins),
     ]).start()
@@ -158,7 +179,6 @@ export default class GoogleMapPlayground extends React.Component {
     })
 
     const buttonStyle = {
-      backgroundColor: buttonColorInterpolate,
       transform: [
         { rotate: buttonRotate }
       ]
@@ -188,25 +208,22 @@ export default class GoogleMapPlayground extends React.Component {
             this.state.spins.map((animation, i) => {
               let animation2 = animation.interpolate({
                 inputRange: [0, 1],
-                outputRange: ['0deg', '135deg']
+                outputRange: ['0deg', '360deg']
               })
+              const icon = icons[i]
               return (
                 <TouchableOpacity
                   key={i}
                   style={[styles.fab]}
                   onPress={this.handlePressBtn}
                 >
-                  <Animated.View style={[styles.button, styles.flyout, getTransform(this.state.fabs[i], animation2)]}>
-                    <Text style={[styles.plus]}>+</Text>
-                  </Animated.View>
+                  <Animated.Image style={[styles.icon, getTransform(this.state.fabs[i], animation2, this.state.xx[i])]} source={icon} />
                 </TouchableOpacity>
               )
             })
           }
           <TouchableOpacity onPress={this.handlePressBtn}>
-            <Animated.View style={[styles.button, buttonStyle]}>
-              <Text style={styles.plus}>+</Text>
-            </Animated.View>
+            <Animated.Image style={[styles.icon, buttonStyle]} source={require('../../assets/icon1.png')} />
           </TouchableOpacity>
         </View>
       </View>
@@ -239,7 +256,7 @@ const styles = StyleSheet.create({
   },
   position: {
     position: 'absolute',
-    right: 45,
+    left: width / 2 - 30,
     bottom: 45
   },
   fab: {
@@ -253,6 +270,10 @@ const styles = StyleSheet.create({
     borderRadius: 40,
     alignItems: 'center',
     justifyContent: 'center'
+  },
+  icon: {
+    width: 60,
+    height: 60,
   },
   flyout: {
     backgroundColor: '#9439FF'
